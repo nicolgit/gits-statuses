@@ -15,16 +15,16 @@ Then type:
 
 ```
 # Basic usage - scan current directory
-.\run.ps1
+.\gits-statuses\run.ps1
 
 # Detailed view with full remote URLs
-.\run.ps1 -Detailed
+.\gits-statuses\run.ps1 -Detailed
 
 # Scan a specific directory
-.\run.ps1 -Path "C:\MyProjects"
+.\gits-statuses\run.ps1 -Path "C:\MyProjects"
 
 # Show help
-.\run.ps1 -Help
+.\gits-statuses\run.ps1 -Help
 ```
 
 # Samples
