@@ -155,9 +155,18 @@ function Format-GitStatusTable {
     Write-Host "`nGit Repositories Status Summary" -ForegroundColor Cyan
     
     if ($Detailed) {
-        $Repositories | Format-Table -Property Repository, Branch, RemoteUrl, @{Name="Ahead";Expression={if($_.Ahead -eq 0){""}else{$_.Ahead}}}, @{Name="Behind";Expression={if($_.Behind -eq 0){""}else{$_.Behind}}}, TotalCommits, @{Name="ChangedFiles";Expression={if($_.ChangedFiles -eq 0){""}else{$_.ChangedFiles}}}, @{Name="Untracked";Expression={if($_.UntrackedFiles -eq 0){""}else{$_.UntrackedFiles}};Alignment="Right"}, Status -AutoSize
+        $Repositories | Format-Table -Property Repository, Branch, RemoteUrl, @{Name="↑ Push";Expression={if($_.Ahead -eq 0){""}else{$_.Ahead}}}, @{Name="↓ Pull";Expression={if($_.Behind -eq 0){""}else{$_.Behind}}}, @{Name="~ Changed";Expression={if($_.ChangedFiles -eq 0){""}else{$_.ChangedFiles}}}, @{Name="? Untracked";Expression={if($_.UntrackedFiles -eq 0){""}else{$_.UntrackedFiles}}}, TotalCommits, Status -AutoSize
     } else {
-        $Repositories | Format-Table -Property Repository, Branch, @{Name="↑ Push";Expression={if($_.Ahead -eq 0){""}else{$_.Ahead}}}, @{Name="↓ Pull";Expression={if($_.Behind -eq 0){""}else{$_.Behind}}}, @{Name="~ Changed";Expression={if($_.ChangedFiles -eq 0){""}else{$_.ChangedFiles}}}, @{Name="? Untracked";Expression={if($_.UntrackedFiles -eq 0){""}else{$_.UntrackedFiles}};Alignment="Right"} -AutoSize
+        # Filter out repositories with no activity (no changes, ahead, behind, or untracked files)
+        $filteredRepositories = $Repositories | Where-Object { 
+            $_.ChangedFiles -gt 0 -or $_.Ahead -gt 0 -or $_.Behind -gt 0 -or $_.UntrackedFiles -gt 0 
+        }
+        
+        if ($filteredRepositories.Count -eq 0) {
+            Write-Host "All repositories are clean and up to date! 🎉" -ForegroundColor Green
+        } else {
+            $filteredRepositories | Format-Table -Property Repository, Branch, @{Name="↑ Push";Expression={if($_.Ahead -eq 0){""}else{$_.Ahead}}}, @{Name="↓ Pull";Expression={if($_.Behind -eq 0){""}else{$_.Behind}}}, @{Name="~ Changed";Expression={if($_.ChangedFiles -eq 0){""}else{$_.ChangedFiles}}}, @{Name="? Untracked";Expression={if($_.UntrackedFiles -eq 0){""}else{$_.UntrackedFiles}}} -AutoSize
+        }
     }
     
     # Summary statistics
