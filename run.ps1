@@ -86,12 +86,19 @@ function Get-GitRepositoryInfo {
         # Get status summary
         $status = git status --porcelain 2>$null
         $statusSummary = "Clean"
+        
+        # Initialize counters
+        $untracked = 0
+        $modified = 0
+        $staged = 0
+        $deleted = 0
+        
         if ($status) {
             $untracked = ($status | Where-Object { $_ -match "^\?\?" } | Measure-Object).Count
             $modified = ($status | Where-Object { $_ -match "^.M" } | Measure-Object).Count
             $staged = ($status | Where-Object { $_ -match "^M" } | Measure-Object).Count
             $deleted = ($status | Where-Object { $_ -match "^.D" } | Measure-Object).Count
-            
+
             $statusParts = @()
             if ($staged -gt 0) { $statusParts += "$staged staged" }
             if ($modified -gt 0) { $statusParts += "$modified modified" }
@@ -117,6 +124,7 @@ function Get-GitRepositoryInfo {
             Behind = $behind
             TotalCommits = [int]$totalCommits
             ChangedFiles = $changedFiles
+            UntrackedFiles = $untracked
             Status = $statusSummary
             UnpushedCommits = $unpushedCount
             UnpulledCommits = $unpulledCount
@@ -145,12 +153,11 @@ function Format-GitStatusTable {
     }
     
     Write-Host "`nGit Repositories Status Summary" -ForegroundColor Cyan
-    Write-Host "=" * 80 -ForegroundColor Cyan
     
     if ($Detailed) {
-        $Repositories | Format-Table -Property Repository, Branch, RemoteUrl, Ahead, Behind, TotalCommits, ChangedFiles, Status -AutoSize
+        $Repositories | Format-Table -Property Repository, Branch, RemoteUrl, @{Name="Ahead";Expression={if($_.Ahead -eq 0){""}else{$_.Ahead}}}, @{Name="Behind";Expression={if($_.Behind -eq 0){""}else{$_.Behind}}}, TotalCommits, @{Name="ChangedFiles";Expression={if($_.ChangedFiles -eq 0){""}else{$_.ChangedFiles}}}, @{Name="Untracked";Expression={if($_.UntrackedFiles -eq 0){""}else{$_.UntrackedFiles}};Alignment="Right"}, Status -AutoSize
     } else {
-        $Repositories | Format-Table -Property Repository, Branch, @{Name="↑Push";Expression={$_.Ahead}}, @{Name="↓Pull";Expression={$_.Behind}}, @{Name="Commits";Expression={$_.TotalCommits}}, @{Name="Changed";Expression={$_.ChangedFiles}}, Status -AutoSize
+        $Repositories | Format-Table -Property Repository, Branch, @{Name="↑ Push";Expression={if($_.Ahead -eq 0){""}else{$_.Ahead}}}, @{Name="↓ Pull";Expression={if($_.Behind -eq 0){""}else{$_.Behind}}}, @{Name="~ Changed";Expression={if($_.ChangedFiles -eq 0){""}else{$_.ChangedFiles}}}, @{Name="? Untracked";Expression={if($_.UntrackedFiles -eq 0){""}else{$_.UntrackedFiles}};Alignment="Right"} -AutoSize
     }
     
     # Summary statistics
@@ -158,12 +165,14 @@ function Format-GitStatusTable {
     $reposWithChanges = ($Repositories | Where-Object { $_.ChangedFiles -gt 0 }).Count
     $reposAhead = ($Repositories | Where-Object { $_.Ahead -gt 0 }).Count
     $reposBehind = ($Repositories | Where-Object { $_.Behind -gt 0 }).Count
+    $reposWithUntracked = ($Repositories | Where-Object { $_.UntrackedFiles -gt 0 }).Count
     
     Write-Host "`nSummary:" -ForegroundColor Cyan
     Write-Host "  Total repositories: $totalRepos"
     Write-Host "  Repositories with changes: $reposWithChanges" -ForegroundColor $(if ($reposWithChanges -gt 0) { "Yellow" } else { "Green" })
     Write-Host "  Repositories ahead of remote: $reposAhead" -ForegroundColor $(if ($reposAhead -gt 0) { "Yellow" } else { "Green" })
     Write-Host "  Repositories behind remote: $reposBehind" -ForegroundColor $(if ($reposBehind -gt 0) { "Yellow" } else { "Green" })
+    Write-Host "  Repositories with untracked files: $reposWithUntracked" -ForegroundColor $(if ($reposWithUntracked -gt 0) { "Yellow" } else { "Green" })
 }
 
 # Main execution

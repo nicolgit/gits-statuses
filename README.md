@@ -14,5 +14,15 @@ git clone https://github.com/nicolgit/gits-statuses
 the type:
 
 ```
-gits-statuses/run.ps1
+# Basic usage - scan current directory
+.\run.ps1
+
+# Detailed view with full remote URLs
+.\run.ps1 -Detailed
+
+# Scan a specific directory
+.\run.ps1 -Path "C:\MyProjects"
+
+# Show help
+.\run.ps1 -Help
 ```
