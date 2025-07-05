@@ -12,6 +12,7 @@ and displays a table with:
 - Changed files count (modified/added/deleted files)
 - Untracked files count
 - Total commits count (shown only in detailed view)
+- Status summary (shown only in detailed view)
 - Remote URL (shown only in detailed view)
 """
 
@@ -36,6 +37,7 @@ class GitRepository:
         self.changed_count = self._get_changed_count()
         self.untracked_count = self._get_untracked_count()
         self.total_commits = self._get_total_commits()
+        self.status = self._get_status_summary()
         self.is_valid = self._is_git_repository()
     
     def _is_git_repository(self) -> bool:
@@ -216,6 +218,27 @@ class GitRepository:
             return 0
         except (subprocess.TimeoutExpired, subprocess.SubprocessError, FileNotFoundError, ValueError):
             return 0
+    
+    def _get_status_summary(self) -> str:
+        """Get a summary of the repository status"""
+        status_parts = []
+        
+        if self.ahead_count > 0:
+            status_parts.append(f"↑{self.ahead_count}")
+        
+        if self.behind_count > 0:
+            status_parts.append(f"↓{self.behind_count}")
+        
+        if self.changed_count > 0:
+            status_parts.append(f"~{self.changed_count}")
+        
+        if self.untracked_count > 0:
+            status_parts.append(f"?{self.untracked_count}")
+        
+        if not status_parts:
+            return "Clean"
+        
+        return " ".join(status_parts)
 
 
 class GitScanner:
@@ -298,9 +321,11 @@ class TableFormatter:
             url_width = max(max_url_width, len("Remote URL"))
             max_commits_width = max(len(str(repo.total_commits)) for repo in display_repositories)
             commits_width = max(max_commits_width, len("Total Commits"))
+            max_status_width = max(len(repo.status) for repo in display_repositories)
+            status_width = max(max_status_width, len("Status"))
             
             # Create header with URL
-            header = f"{'Repository':<{name_width}} | {'Branch':<{branch_width}} | {'Ahead':<{ahead_width}} | {'Behind':<{behind_width}} | {'Changed':<{changed_width}} | {'Untracked':<{untracked_width}} | {'Total Commits':<{commits_width}} | {'Remote URL':<{url_width}}"
+            header = f"{'Repository':<{name_width}} | {'Branch':<{branch_width}} | {'Ahead':<{ahead_width}} | {'Behind':<{behind_width}} | {'Changed':<{changed_width}} | {'Untracked':<{untracked_width}} | {'Total Commits':<{commits_width}} | {'Status':<{status_width}} | {'Remote URL':<{url_width}}"
             separator = "-" * len(header)
             
             # Create rows with URL
@@ -310,7 +335,7 @@ class TableFormatter:
                 behind_str = str(repo.behind_count) if repo.behind_count > 0 else ""
                 changed_str = str(repo.changed_count) if repo.changed_count > 0 else ""
                 untracked_str = str(repo.untracked_count) if repo.untracked_count > 0 else ""
-                row = f"{repo.name:<{name_width}} | {repo.branch:<{branch_width}} | {ahead_str:<{ahead_width}} | {behind_str:<{behind_width}} | {changed_str:<{changed_width}} | {untracked_str:<{untracked_width}} | {repo.total_commits:<{commits_width}} | {repo.remote_url:<{url_width}}"
+                row = f"{repo.name:<{name_width}} | {repo.branch:<{branch_width}} | {ahead_str:<{ahead_width}} | {behind_str:<{behind_width}} | {changed_str:<{changed_width}} | {untracked_str:<{untracked_width}} | {repo.total_commits:<{commits_width}} | {repo.status:<{status_width}} | {repo.remote_url:<{url_width}}"
                 rows.append(row)
         else:
             # Create header without URL
@@ -378,6 +403,9 @@ def main():
         scanner = GitScanner(args.path)
         repositories = scanner.scan()
         
+        # Sort repositories by name
+        repositories.sort(key=lambda repo: repo.name.lower())
+        
         # Display results
         print(f"\nFound {len(repositories)} Git repositories:\n")
         table = TableFormatter.format_repositories(repositories, show_url=args.detailed)
@@ -385,7 +413,18 @@ def main():
         
         # Summary
         if repositories:
-            print(f"\nSummary: {len(repositories)} Git repositories found")
+            # Calculate summary statistics
+            repos_with_changes = len([repo for repo in repositories if repo.changed_count > 0])
+            repos_with_ahead = len([repo for repo in repositories if repo.ahead_count > 0])
+            repos_with_behind = len([repo for repo in repositories if repo.behind_count > 0])
+            repos_with_untracked = len([repo for repo in repositories if repo.untracked_count > 0])
+            
+            print(f"\nSummary:")
+            print(f"  Total repositories: {len(repositories)}")
+            print(f"  Repositories with changes: {repos_with_changes}")
+            print(f"  Repositories ahead of remote: {repos_with_ahead}")
+            print(f"  Repositories behind remote: {repos_with_behind}")
+            print(f"  Repositories with untracked files: {repos_with_untracked}")
         else:
             print("\nNo Git repositories found in the specified directory.")
     

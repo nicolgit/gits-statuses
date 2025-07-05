@@ -155,7 +155,7 @@ function Format-GitStatusTable {
     Write-Host "`nGit Repositories Status Summary" -ForegroundColor Cyan
     
     if ($Detailed) {
-        $Repositories | Format-Table -Property Repository, Branch, RemoteUrl, @{Name="↑ Push";Expression={if($_.Ahead -eq 0){""}else{$_.Ahead}}}, @{Name="↓ Pull";Expression={if($_.Behind -eq 0){""}else{$_.Behind}}}, @{Name="~ Changed";Expression={if($_.ChangedFiles -eq 0){""}else{$_.ChangedFiles}}}, @{Name="? Untracked";Expression={if($_.UntrackedFiles -eq 0){""}else{$_.UntrackedFiles}}}, TotalCommits, Status -AutoSize
+        $Repositories | Format-Table -Property Repository, Branch, @{Name="↑ Push";Expression={if($_.Ahead -eq 0){""}else{$_.Ahead}}}, @{Name="↓ Pull";Expression={if($_.Behind -eq 0){""}else{$_.Behind}}}, @{Name="~ Changed";Expression={if($_.ChangedFiles -eq 0){""}else{$_.ChangedFiles}}}, @{Name="? Untracked";Expression={if($_.UntrackedFiles -eq 0){""}else{$_.UntrackedFiles}}}, TotalCommits, Status, RemoteUrl -AutoSize
     } else {
         # Filter out repositories with no activity (no changes, ahead, behind, or untracked files)
         $filteredRepositories = $Repositories | Where-Object { 

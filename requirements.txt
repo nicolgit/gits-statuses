@@ -1,0 +1,5 @@
+# Git Repository Scanner
+# This script uses only Python standard library modules
+# No external dependencies required
+
+# Python 3.7+ is required for pathlib features
