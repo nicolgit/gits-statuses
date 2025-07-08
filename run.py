@@ -9,7 +9,7 @@ and displays a table with:
 - Current branch
 - Ahead count (commits ahead of remote)
 - Behind count (commits behind remote)
-- Changed files count (modified/added/deleted files)
+- Changed files count (all files from git status - includes untracked files)
 - Untracked files count
 - Total commits count (shown only in detailed view)
 - Status summary (shown only in detailed view)
@@ -148,7 +148,7 @@ class GitRepository:
             return 0
     
     def _get_changed_count(self) -> int:
-        """Get the number of changed files (modified, added, deleted)"""
+        """Get the number of changed files (includes all files from git status --porcelain)"""
         try:
             # Get git status porcelain output
             result = subprocess.run(
@@ -163,15 +163,8 @@ class GitRepository:
                 if not lines or lines == ['']:
                     return 0
                 
-                # Count changed files (excluding untracked files)
-                changed_count = 0
-                for line in lines:
-                    if len(line) >= 2:
-                        # Check if file is modified/added/deleted (not untracked)
-                        if line[:2] != '??':
-                            changed_count += 1
-                
-                return changed_count
+                # Count all files (PowerShell approach - includes untracked files)
+                return len(lines)
             return 0
         except (subprocess.TimeoutExpired, subprocess.SubprocessError, FileNotFoundError, ValueError):
             return 0
