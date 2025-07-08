@@ -154,9 +154,7 @@ Summary:
 - **Python version**: Python 3.7+
 - Git must be installed and available in PATH
 
-## Status Symbols (Python Version)
-
-The Python version uses intuitive symbols in the detailed view's status column:
+## Status Symbols 
 
 - **↑n**: n commits ahead of remote
 - **↓n**: n commits behind remote  
