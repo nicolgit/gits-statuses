@@ -5,8 +5,7 @@ Main CLI entry point for gitskan.
 import argparse
 import sys
 
-from git_tools import GitScanner
-from output import TableFormatter
+from git_tools import GitScanner, TableFormatter
 from utils import (
     check_git_availability,
     print_error,
