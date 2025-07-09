@@ -1,12 +1,12 @@
-# gitskan - Git Repository Status Scanner
+# gitskan
 
-A CLI tool for scanning directories and displaying Git repository status information. gitskan is a fork of [gits-statuses](https://github.com/nicolgit/gits-statuses) which provides a comprehensive overview of all your Git repositories in a clean, tabular format.
+A CLI tool for scanning directories and displaying Git repository status information. `gitskan` is a fork of [gits-statuses](https://github.com/nicolgit/gits-statuses) which provides a comprehensive overview of all your Git repositories in a clean, tabular format.
 
 Notes:
-- This fork was catalyzed by https://github.com/nicolgit/gits-statuses/issues/1 
+- This fork was catalyzed by this [GitHub issue](https://github.com/nicolgit/gits-statuses/issues/1)
 - This is meant to implement the exact functionality but in a single CLI executable
 - Renamed to `gitskan` as to not conflict with `gits-statuses` and to further simplify CLI command
-  - Executable name is `gsk`
+  - Executable name in CLI: `gsk`
 
 ## Features
 
@@ -41,28 +41,17 @@ This scans your directories and displays:
 - [uv](https://docs.astral.sh/uv/)
 
 ### Install with uv (Recommended)
-Note: This is only being temporarily published as an OS CLI tool to PyPi to showcase how it can be distributed and used. If this fork can be merged, I would take this down and hand it off to the original author!
+Note: This is only being temporarily published as an OS CLI tool to PyPi to showcase how it can be distributed and used. The hope is to merge this fork!
 
 ```bash
 # Install uv if you haven't already
-pip install uv # or brew install uv on mac
+pip install uv     # or brew install uv on mac
 
 # Install gitskan
 uv tool install gitskan
 
 # Verify installation
-gsk --help
-```
-
-### Install from Source
-
-```bash
-# Clone the repository
-git clone https://github.com/jairus-m/gitskan.git
-cd gitskan
-
-# Install
-uv pip install .
+gsk --version
 ```
 
 ## Usage
