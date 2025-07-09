@@ -16,6 +16,11 @@ class GitRepository:
         branch (str): The current branch of the repository.
         remote_url (str): The remote URL of the repository.
         ahead_count (int): The number of commits ahead of the remote.
+        behind_count (int): The number of commits behind the remote.
+        changed_count (int): The number of changed files.
+        untracked_count (int): The number of untracked files.
+        total_commits (int): The total number of commits in the repository.
+        status (str): The summary of the repository status.
     """
 
     def __init__(self, path: str):
