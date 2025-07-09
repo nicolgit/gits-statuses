@@ -1,160 +1,139 @@
-# Welcome to gits-statuses
-In this repo you can find both PowerShell and Python scripts that once executed into the root directory where you have all your local repos
-give you a table in output that shows repo status information like branch name, commits ahead/behind, changed files, untracked files, and more, 
-in a similar way oh-my-posh provides on the prompt, but here you have a massive view of all your repos.
+# Git Statuses - Monorepo
 
-# How to use it
+A unified repository containing multiple deployments for Git repository status scanning across different platforms.
 
-Clone the repo in the same folder you have all your repos
+## 📦 Packages Structure
 
-```
-git clone https://github.com/nicolgit/gits-statuses  
-```
+This monorepo contains three separate deployments:
 
-## PowerShell Version
+- **`packages/python-pypi/`** - Python CLI package with PyPI deployment
+- **`packages/swiftbar-plugin/`** - SwiftBar plugin for macOS menu bar
+- **`packages/powershell-module/`** - PowerShell module for Windows/cross-platform
 
-Then type:
+## 🔗 Shared Code
 
-```
-# Basic usage - scan current directory
-.\gits-statuses\run.ps1
+- **`shared/git_tools/`** - Symlinked Git utilities (from python-pypi)
+- **`shared/utils/`** - Symlinked utility functions (from python-pypi)
+- **`packages/swiftbar-plugin/shared/`** - Local symlinks to shared utilities
 
-# Detailed view with full remote URLs
-.\gits-statuses\run.ps1 -Detailed
+## 🛠️ Build Infrastructure
 
-# Scan a specific directory
-.\gits-statuses\run.ps1 -Path "C:\MyProjects"
+- **`scripts/build-all.sh`** - Builds all packages
+- **`scripts/test-all.sh`** - Tests all packages
+- **`scripts/deploy/`** - Deployment scripts (ready for expansion)
 
-# Show help
-.\gits-statuses\run.ps1 -Help
-```
+## ✨ Key Features
 
-## Python Version
+1. **Code Sharing**: Swift and Python both use the same Git utilities via symlinks
+2. **Separate Deployments**: Each package can be deployed independently
+3. **Unified Build**: Single command builds all packages
+4. **Shared Git Logic**: Extracted from SwiftBar plugin to shared utilities
 
-Alternatively, you can use the Python version:
+## 🚀 Quick Start
 
-```
-# Basic usage - scan current directory
-python3 gits-statuses/run.py
-
-# Detailed view with remote URLs, total commits, and status summary
-python3 gits-statuses/run.py --detailed
-
-# Scan a specific directory
-python3 gits-statuses/run.py /path/to/projects
-
-# Show help
-python3 gits-statuses/run.py --help
+### Build All Packages
+```bash
+./scripts/build-all.sh
 ```
 
-### Features
+### Test All Packages
+```bash
+./scripts/test-all.sh
+```
 
-Both scripts provide:
+> **Note**: Scripts automatically detect available tools and provide helpful hints:
+> - Python package: Uses `uv` if available, falls back to `python`
+> - SwiftBar plugin: Validates syntax and basic execution
+> - PowerShell module: Requires `pwsh` (install with `brew install powershell` on macOS)
 
-**Standard View:**
+## 📋 Usage
+
+### Python PyPI Package
+```bash
+# Navigate to the Python package
+cd packages/python-pypi
+
+# Install dependencies
+uv sync
+
+# Run the CLI (use --path to specify directory)
+uv run src/cli.py --path ../..
+
+# For detailed view
+uv run src/cli.py --path ../.. --detailed
+```
+
+### SwiftBar Plugin
+```bash
+# Navigate to the SwiftBar plugin
+cd packages/swiftbar-plugin
+
+# Run the plugin (specify path to scan)
+python3 git_plugin.py ../..
+
+# Or run with default path (~/GitHub)
+python3 git_plugin.py
+```
+
+### PowerShell Module
+```powershell
+# Navigate to the PowerShell module
+cd packages/powershell-module
+
+# Import the module
+Import-Module ./GitStatuses.psd1
+
+# Use the function
+Get-GitStatuses
+
+# For detailed view
+Get-GitStatuses -Detailed
+```
+
+> **Note**: PowerShell Core (`pwsh`) is required. Install with `brew install powershell` on macOS.
+
+## 🔧 Development
+
+Each package maintains its own development workflow while sharing core Git utilities:
+
+1. **Shared utilities** are maintained in `packages/python-pypi/src/`
+2. **Symlinks** ensure all packages use the same core logic
+3. **Build scripts** validate all packages together
+4. **Independent deployment** allows each package to be released separately
+
+### Test Coverage
+- **Python PyPI**: Basic import tests and syntax validation
+- **SwiftBar Plugin**: Syntax validation and execution testing
+- **PowerShell Module**: Module manifest validation and import testing
+
+### Build Outputs
+- **Python PyPI**: Creates wheel and source distributions in `packages/python-pypi/dist/`
+- **SwiftBar Plugin**: Validates Python syntax and shared utility imports
+- **PowerShell Module**: Validates module manifest and function exports
+
+## 📊 What This Tool Does
+
+This tool scans directories for Git repositories and displays a comprehensive table with:
+
 - Repository name
 - Current branch
-- Commits ahead of remote
-- Commits behind remote  
+- Commits ahead/behind remote
 - Changed files count
 - Untracked files count
-- Only shows repositories with changes (clean repos are hidden)
+- Status summary
+- Remote URL (in detailed view)
 
-**Detailed View:**
-- All columns from standard view
-- Total commits count
-- Status summary (e.g., "↑1 ~2 ?3" for 1 ahead, 2 changed, 3 untracked)
-- Remote URL
-- Shows ALL repositories (including clean ones)
+## 🎯 Target Platforms
 
-**Enhanced Summary:**
-- Total repositories found
-- Repositories with changes
-- Repositories ahead of remote
-- Repositories behind remote
-- Repositories with untracked files
+- **Python**: Cross-platform CLI tool via PyPI
+- **SwiftBar**: macOS menu bar integration
+- **PowerShell**: Windows/cross-platform module
 
-# Samples
+## 📄 Legacy Information
 
-## PowerShell Version
+This monorepo was created from individual PowerShell and Python scripts that provided repository status information. The original functionality is preserved while adding a unified structure for better maintainability and code sharing.
 
-**Standard view (shows only repositories with changes):**
-```
-Repository    Branch ↑ Push ↓ Pull ~ Changed ? Untracked
---------------------------------------------------------
-gits-statuses main   1             1         1         
-my-project    dev    2             3         2         
-web-app       main         2       1                   
-
-Summary:
-  Total repositories: 5
-  Repositories with changes: 3
-  Repositories ahead of remote: 2
-  Repositories behind remote: 1
-  Repositories with untracked files: 2
-```
-
-**Detailed view (shows all repositories):**
-```
-Repository    Branch ↑ Push ↓ Pull ~ Changed ? Untracked TotalCommits Status                    RemoteUrl                               
----------------------------------------------------------------------------------------------------------------------------------------
-api-service   main                                       45           Clean                     https://github.com/user/api-service
-gits-statuses main   1             1         1           9            1 staged, 1 untracked     https://github.com/nicolgit/gits-statuses
-my-project    dev    2             3         2           67           2 staged, 3 modified, ... https://github.com/user/my-project
-utils-lib     main                                       23           Clean                     https://github.com/user/utils-lib
-web-app       main          2      1                     102          1 modified                https://github.com/user/web-app
-
-Summary:
-  Total repositories: 5
-  Repositories with changes: 3
-  Repositories ahead of remote: 2
-  Repositories behind remote: 1
-  Repositories with untracked files: 2
-```
-
-## Python Version
-
-**Standard view (shows only repositories with changes):**
-```
-Repository    | Branch | Ahead | Behind | Changed | Untracked
--------------------------------------------------------------
-gits-statuses | main   | 1     |        | 1       | 1        
-my-project    | dev    | 2     |        | 3       | 2        
-web-app       | main   |       | 2      | 1       |          
-
-Summary:
-  Total repositories: 5
-  Repositories with changes: 3
-  Repositories ahead of remote: 2
-  Repositories behind remote: 1
-  Repositories with untracked files: 2
-```
-
-**Detailed view (shows all repositories):**
-```
-Repository    | Branch | Ahead | Behind | Changed | Untracked | Total Commits | Status   | Remote URL                               
----------------------------------------------------------------------------------------------------------------
-api-service   | main   |       |        |         |           | 45            | Clean    | https://github.com/user/api-service
-gits-statuses | main   | 1     |        | 1       | 1         | 9             | ↑1 ~1 ?1 | https://github.com/nicolgit/gits-statuses
-my-project    | dev    | 2     |        | 3       | 2         | 67            | ↑2 ~3 ?2 | https://github.com/user/my-project
-utils-lib     | main   |       |        |         |           | 23            | Clean    | https://github.com/user/utils-lib
-web-app       | main   |       | 2      | 1       |           | 102           | ↓2 ~1    | https://github.com/user/web-app
-
-Summary:
-  Total repositories: 5
-  Repositories with changes: 3
-  Repositories ahead of remote: 2
-  Repositories behind remote: 1
-  Repositories with untracked files: 2
-```
-
-## Requirements
-
-- **PowerShell version**: PowerShell 5.1+ or PowerShell Core 6+
-- **Python version**: Python 3.7+
-- Git must be installed and available in PATH
-
-## Status Symbols 
+## 🔍 Status Symbols 
 
 - **↑n**: n commits ahead of remote
 - **↓n**: n commits behind remote  
@@ -166,3 +145,10 @@ Examples:
 - `↑2 ~1 ?3` = 2 commits ahead, 1 changed file, 3 untracked files
 - `↓1 ~2` = 1 commit behind, 2 changed files
 - `Clean` = No changes, fully synchronized
+
+## 📋 Requirements
+
+- Git must be installed and available in PATH
+- **Python package**: Python 3.7+
+- **PowerShell module**: PowerShell 5.1+ or PowerShell Core 6+
+- **SwiftBar plugin**: Python 3.7+ and SwiftBar installed
