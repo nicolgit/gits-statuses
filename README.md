@@ -1,55 +1,16 @@
-# Welcome to gits-statuses
-In this repo you can find both PowerShell and Python scripts that once executed into the root directory where you have all your local repos
-give you a table in output that shows repo status information like branch name, commits ahead/behind, changed files, untracked files, and more, 
-in a similar way oh-my-posh provides on the prompt, but here you have a massive view of all your repos.
+# gitskan - Git Repository Status Scanner
 
-# How to use it
+A CLI tool for scanning directories and displaying Git repository status information. gitskan is a fork of [gits-statuses](https://github.com/nicolgit/gits-statuses) which provides a comprehensive overview of all your Git repositories in a clean, tabular format.
 
-Clone the repo in the same folder you have all your repos
+Notes:
+- This fork was catalyzed by https://github.com/nicolgit/gits-statuses/issues/1 
+- This is meant to implement the exact functionality but in a single CLI executable
+- Renamed to `gitskan` as to not conflict with `gits-statuses` and to further simplify CLI command
+  - Executable name is `gsk`
 
-```
-git clone https://github.com/nicolgit/gits-statuses  
-```
+## Features
 
-## PowerShell Version
-
-Then type:
-
-```
-# Basic usage - scan current directory
-.\gits-statuses\run.ps1
-
-# Detailed view with full remote URLs
-.\gits-statuses\run.ps1 -Detailed
-
-# Scan a specific directory
-.\gits-statuses\run.ps1 -Path "C:\MyProjects"
-
-# Show help
-.\gits-statuses\run.ps1 -Help
-```
-
-## Python Version
-
-Alternatively, you can use the Python version:
-
-```
-# Basic usage - scan current directory
-python3 gits-statuses/run.py
-
-# Detailed view with remote URLs, total commits, and status summary
-python3 gits-statuses/run.py --detailed
-
-# Scan a specific directory
-python3 gits-statuses/run.py /path/to/projects
-
-# Show help
-python3 gits-statuses/run.py --help
-```
-
-### Features
-
-Both scripts provide:
+This scans your directories and displays:
 
 **Standard View:**
 - Repository name
@@ -74,45 +35,55 @@ Both scripts provide:
 - Repositories behind remote
 - Repositories with untracked files
 
-# Samples
+## Installation
 
-## PowerShell Version
+### Prerequisites
+- [uv](https://docs.astral.sh/uv/)
 
-**Standard view (shows only repositories with changes):**
-```
-Repository    Branch ↑ Push ↓ Pull ~ Changed ? Untracked
---------------------------------------------------------
-gits-statuses main   1             1         1         
-my-project    dev    2             3         2         
-web-app       main         2       1                   
+### Install with uv (Recommended)
+Note: This is only being temporarily published as an OS CLI tool to PyPi to showcase how it can be distributed and used. If this fork can be merged, I would take this down and hand it off to the original author!
 
-Summary:
-  Total repositories: 5
-  Repositories with changes: 3
-  Repositories ahead of remote: 2
-  Repositories behind remote: 1
-  Repositories with untracked files: 2
-```
+```bash
+# Install uv if you haven't already
+pip install uv # or brew install uv on mac
 
-**Detailed view (shows all repositories):**
-```
-Repository    Branch ↑ Push ↓ Pull ~ Changed ? Untracked TotalCommits Status                    RemoteUrl                               
----------------------------------------------------------------------------------------------------------------------------------------
-api-service   main                                       45           Clean                     https://github.com/user/api-service
-gits-statuses main   1             1         1           9            1 staged, 1 untracked     https://github.com/nicolgit/gits-statuses
-my-project    dev    2             3         2           67           2 staged, 3 modified, ... https://github.com/user/my-project
-utils-lib     main                                       23           Clean                     https://github.com/user/utils-lib
-web-app       main          2      1                     102          1 modified                https://github.com/user/web-app
+# Install gitskan
+uv tool install gitskan
 
-Summary:
-  Total repositories: 5
-  Repositories with changes: 3
-  Repositories ahead of remote: 2
-  Repositories behind remote: 1
-  Repositories with untracked files: 2
+# Verify installation
+gsk --help
 ```
 
-## Python Version
+### Install from Source
+
+```bash
+# Clone the repository
+git clone https://github.com/jairus-m/gitskan.git
+cd gitskan
+
+# Install
+uv pip install .
+```
+
+## Usage
+
+### Basic Commands
+
+```bash
+# Basic usage - scan current directory
+gsk
+
+# Detailed view with remote URLs and total commits
+gsk --detailed
+
+# Scan a specific directory
+gsk --path /path/to/projects
+
+# Show help
+gsk --help
+```
+
+### Examples
 
 **Standard view (shows only repositories with changes):**
 ```
@@ -147,12 +118,6 @@ Summary:
   Repositories behind remote: 1
   Repositories with untracked files: 2
 ```
-
-## Requirements
-
-- **PowerShell version**: PowerShell 5.1+ or PowerShell Core 6+
-- **Python version**: Python 3.7+
-- Git must be installed and available in PATH
 
 ## Status Symbols 
 
