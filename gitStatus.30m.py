@@ -305,7 +305,7 @@ NAME_WIDTH = 18
 BRANCH_WIDTH = 12
 COUNT_WIDTH = 10
 
-# TODO: Replace with your own root repository of
+# TODO: Set this to the path where your Git repositories are located
 scan_path = Path.home() / "GitHub"
 
 FONT = "font=Menlo size=11"
