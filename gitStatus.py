@@ -31,7 +31,7 @@ import subprocess
 import argparse
 import sys
 from pathlib import Path
-from typing import List, Optional, Dict, Any
+from typing import List
 
 
 class GitRepository:
@@ -266,14 +266,6 @@ class GitScanner:
     def scan(self) -> List[GitRepository]:
         """Scan the directory for Git repositories"""
 
-        # Check if the scan path itself is a Git repository
-
-        """
-        if self._is_directory_git_repo(self.scan_path):
-            repo = GitRepository(str(self.scan_path))
-            if repo.is_valid:
-                self.repositories.append(repo)
-        """
         # Scan subdirectories
         try:
             for item in self.scan_path.iterdir():
@@ -292,6 +284,7 @@ class GitScanner:
         return (path / ".git").exists()
 
 
+# Utility functions
 def check_git_availability() -> bool:
     """Check if Git is available in the system"""
     try:
@@ -301,31 +294,29 @@ def check_git_availability() -> bool:
         return False
 
 
-# SwiftBar parameters for rendering
-NAME_WIDTH = 18
-BRANCH_WIDTH = 12
-COUNT_WIDTH = 10
-
-name = os.getenv("name", "GitHub")
-
-
 def truncate(text, width):
     if len(text) > width:
         return text[: width - 3] + "..."
     return text.ljust(width)
 
 
+# SwiftBar parameters for rendering
+NAME_WIDTH = 18
+BRANCH_WIDTH = 12
+COUNT_WIDTH = 10
+
+# TODO: Replace with your own root repository of
+scan_path = Path.home() / "GitHub"
+
 FONT = "font=Menlo size=11"
-print("📦 GitStatus")
+print("🗂️ GitStatus")
 print("---")
 
 # Header (titoli colonna)
-header = f"{'Repository':<{NAME_WIDTH}} {'Branch':<12}{'Ahead':<{COUNT_WIDTH}}{'Behind':<{COUNT_WIDTH}}{'Change':<{COUNT_WIDTH}}{'Untracked':<{COUNT_WIDTH}} | {FONT}"
+header = f"{'Repository':<{NAME_WIDTH}} {'Branch':<12}{'Ahead':<{COUNT_WIDTH}}{'Behind':<{COUNT_WIDTH}}{'Changed':<{COUNT_WIDTH}}{'Untracked':<{COUNT_WIDTH}} | {FONT}"
 print(header)
 print("---")
 
-
-scan_path = Path.home() / "GitHub"
 
 parser = argparse.ArgumentParser(
     description="Git Repository Status Scanner - Displays basic information for all Git repositories"
@@ -363,24 +354,24 @@ try:
     repositories = scanner.scan()
     # Sort repositories by name
     repositories.sort(key=lambda repo: repo.name.lower())
-    # Display results
-    # print(f"\nFound {len(repositories)} Git repositories:\n")
 
     for repo in repositories:
         name = truncate(repo.name, 15)
-        branch = truncate(repo.branch, 12)
+        branch = truncate(repo.branch, 9)
         ahead = str(repo.ahead_count)
         behind = str(repo.behind_count)
         changed = str(repo.changed_count)
         untracked = str(repo.untracked_count)
 
-        line = f"{name:<{NAME_WIDTH}} {branch:<12}{ahead:<{COUNT_WIDTH}}{behind:<{COUNT_WIDTH}}{changed:<{COUNT_WIDTH}}{untracked:<{COUNT_WIDTH}}"
+        line = f"{name:<{NAME_WIDTH}} {branch:<{BRANCH_WIDTH}}{ahead:<{COUNT_WIDTH}}{behind:<{COUNT_WIDTH}}{changed:<{COUNT_WIDTH}}{untracked:<{COUNT_WIDTH}}"
 
-        print(f"{line} | href={repo.remote_url} {FONT}")
+        # print(f"{line} | href={repo.remote_url} {FONT}")
+        # print(
+        #    f"{line} | bash=/usr/bin/env param1=code param2='{repo.path}' terminal=false {FONT}"
+        # )
+        cmd = f'code_bin=$(command -v code) && cd "{repo.path}" && "$code_bin" .'
+        print(f"{line} | bash=/bin/zsh param1=-c param2='{cmd}' terminal=false {FONT}")
 
-except KeyboardInterrupt:
-    print("\nOperation cancelled by user.")
-    sys.exit(1)
 except Exception as e:
     print(f"An error occurred: {e}", file=sys.stderr)
     sys.exit(1)
