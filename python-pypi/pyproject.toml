@@ -1,6 +1,6 @@
 [project]
 name = "gits-statuses"
-version = "0.0.4"
+version = "0.1.0"
 description = "A CLI tool to scan directories for Git repositories and display their status information."
 requires-python = ">=3.8"
 authors = [
@@ -11,7 +11,7 @@ readme = "README.md"
 license = "MIT"
 keywords = ["git", "repository", "status", "cli", "scanner"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
