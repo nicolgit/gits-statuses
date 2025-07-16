@@ -2,25 +2,49 @@
 
 A CLI tool for scanning directories and displaying Git repository status information. This tool provides a comprehensive overview of all your Git repositories in a clean, tabular format.
 
+Notes:
+- Implements a single CLI utility that is:
+  - Distributed and downloaded via [PyPi](https://pypi.org/project/gits-statuses/)
+  - Used globally as a bona fide CLI utility
+  - Easy to install and use for the end user
+  - Compatible with any terminal
+
+## Features
+
+This scans your directories and displays:
+
+**Standard View:**
+- Repository name
+- Current branch
+- Commits ahead of remote
+- Commits behind remote  
+- Changed files count
+- Untracked files count
+- Only shows repositories with changes (clean repos are hidden)
+
+**Detailed View:**
+- All columns from standard view
+- Total commits count
+- Status summary (e.g., "↑1 ~2 ?3" for 1 ahead, 2 changed, 3 untracked)
+- Remote URL
+- Shows ALL repositories (including clean ones)
+
+**Enhanced Summary:**
+- Total repositories found
+- Repositories with changes
+- Repositories ahead of remote
+- Repositories behind remote
+- Repositories with untracked files
+
+## Installation
+
 ### Prerequisites
 - [uv](https://docs.astral.sh/uv/)
 
-### Install
-Note: This CLI tool will eventually be published to PyPi but for now, will need to be manually installed.
-
+### Install with uv (Recommended)
 ```bash
-# Clone the repository
-git clone https://github.com/nicolgit/gits-statuses.git
-
-# Change into the directory
-cd gits-statuses/python-pypi/
-
-# Install the package
-uv run pip install .
-
-# Activate virtual env
-source .venv/bin/activate # macos
-.venv\Scripts\activate # windows
+# Install gits-statuses
+uv tool install gits-statuses
 
 # Verify installation
 gits-statuses --version
