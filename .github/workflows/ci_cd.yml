@@ -153,7 +153,7 @@ jobs:
           body: |
             Published to PyPI: https://pypi.org/project/gits-statuses/${{ steps.get_version.outputs.version }}/
           files: |
-            dist/*
+            python-pypi/dist/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
