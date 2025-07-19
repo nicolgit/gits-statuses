@@ -12,6 +12,9 @@ on:
       - 'python-pypi/src/**'
       - 'python-pypi/pyproject.toml'
 
+permissions:
+  contents: write
+
 jobs:
   ci-version-check:
     if: github.event_name == 'pull_request'
