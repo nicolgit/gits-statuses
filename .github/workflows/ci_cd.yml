@@ -144,6 +144,10 @@ jobs:
           VERSION=$(grep -m1 'version = ' pyproject.toml | cut -d'"' -f2)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Build package
+        run: |
+          uv build
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
