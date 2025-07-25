@@ -15,7 +15,7 @@ git clone https://github.com/nicolgit/gits-statuses
 
 Then type:
 
-```
+```bash
 # Basic usage - scan current directory
 .\gits-statuses\run.ps1
 
@@ -31,20 +31,22 @@ Then type:
 
 ## Python Version
 
-Alternatively, you can use the Python version:
+Alternatively, you can use the Python CLI package:
 
-```
+Note: Refer to [these](https://github.com/nicolgit/gits-statuses/blob/main/python-pypi/README.md) installation instructions found in `/python-pypi/README.md`.
+
+```bash
 # Basic usage - scan current directory
-python3 gits-statuses/run.py
+gits-statuses
 
-# Detailed view with remote URLs, total commits, and status summary
-python3 gits-statuses/run.py --detailed
+# Detailed view with remote URLs and total commits
+gits-statuses --detailed
 
 # Scan a specific directory
-python3 gits-statuses/run.py /path/to/projects
+gits-statuses --path /path/to/projects
 
 # Show help
-python3 gits-statuses/run.py --help
+gits-statuses --help
 ```
 
 ### Features
