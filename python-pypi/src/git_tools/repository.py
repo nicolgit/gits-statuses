@@ -30,6 +30,7 @@ class GitRepository:
 
         if self.is_valid:
             self.branch = self._get_current_branch()
+            self.rev = self._get_current_revision()
             self.remote_url = self._get_remote_url()
             self.ahead_count = self._get_ahead_count()
             self.behind_count = self._get_behind_count()
@@ -39,6 +40,7 @@ class GitRepository:
             self.status = self._get_status_summary()
         else:
             self.branch = "Unknown"
+            self.rev = "Unknown"
             self.remote_url = "No remote"
             self.ahead_count = 0
             self.behind_count = 0
@@ -68,6 +70,30 @@ class GitRepository:
             FileNotFoundError,
         ):
             return False
+
+    def _get_current_revision(self) -> str:
+        """
+        Get the current commit hash.
+        Returns:
+            str: The current commit hash.
+        """
+        try:
+            result = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=self.path,
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+            if result.returncode == 0 and (rev := result.stdout.strip()):
+                return rev
+            return "Unknown"
+        except (
+            subprocess.TimeoutExpired,
+            subprocess.SubprocessError,
+            FileNotFoundError,
+        ):
+            return "Unknown"
 
     def _get_current_branch(self) -> str:
         """
