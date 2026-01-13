@@ -172,6 +172,41 @@ class TestGitRepositoryBranch:
         assert result == "Unknown"
 
 
+class TestGitRepositoryRevision:
+    """Tests for revision information retrieval."""
+
+    @patch("subprocess.run")
+    def test_get_current_revision_success(self, mock_run):
+        """Test _get_current_branch with successful result."""
+        mock_run.return_value.returncode = 0
+        mock_run.return_value.stdout = "918e0c222f7ca5ea91794c0679cc414e03430bad\n"
+
+        repo = GitRepository("/path/to/repo")
+        result = repo._get_current_revision()
+
+        assert result == "918e0c222f7ca5ea91794c0679cc414e03430bad"
+
+    @patch("subprocess.run")
+    def test_get_current_revision_error(self, mock_run):
+        """Test _get_current_revision with git error."""
+        mock_run.return_value.returncode = 1
+
+        repo = GitRepository("/path/to/repo")
+        result = repo._get_current_revision()
+
+        assert result == "Unknown"
+
+    @patch("subprocess.run")
+    def test_get_current_revision_timeout(self, mock_run):
+        """Test _get_current_revision with timeout."""
+        mock_run.side_effect = subprocess.TimeoutExpired(["git"], 5)
+
+        repo = GitRepository("/path/to/repo")
+        result = repo._get_current_revision()
+
+        assert result == "Unknown"
+
+
 class TestGitRepositoryRemote:
     """Tests for remote URL retrieval."""
 

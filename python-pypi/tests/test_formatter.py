@@ -68,6 +68,7 @@ class TestTableFormatterRepositories:
         repo = Mock()
         repo.name = "test-repo"
         repo.branch = "feature"
+        repo.rev = "918e0c222f7ca5ea91794c0679cc414e03430bad"
         repo.ahead_count = 1
         repo.behind_count = 0
         repo.changed_count = 2
@@ -83,6 +84,7 @@ class TestTableFormatterRepositories:
         assert len(lines) >= 3  # header, separator, at least one row
         assert "Repository" in lines[0]
         assert "Branch" in lines[0]
+        assert "Commit" in lines[0]
         assert "Total Commits" in lines[0]
         assert "Status" in lines[0]
         assert "Remote URL" in lines[0]
@@ -90,6 +92,7 @@ class TestTableFormatterRepositories:
         # Check that all repo data is present
         assert "test-repo" in result
         assert "feature" in result
+        assert "918e0c222f7ca5ea91794c0679cc414e03430bad" in result
         assert "42" in result  # total commits
         assert "↑1 ~2 ?1" in result  # status
         assert "https://github.com/user/test-repo.git" in result
@@ -100,6 +103,7 @@ class TestTableFormatterRepositories:
         clean_repo = Mock()
         clean_repo.name = "clean-repo"
         clean_repo.branch = "main"
+        clean_repo.rev = "918e0c222f7ca5ea91794c0679cc414e03430bad"
         clean_repo.ahead_count = 0
         clean_repo.behind_count = 0
         clean_repo.changed_count = 0
@@ -112,6 +116,7 @@ class TestTableFormatterRepositories:
         dirty_repo = Mock()
         dirty_repo.name = "dirty-repo"
         dirty_repo.branch = "develop"
+        dirty_repo.rev = "918e0c222f7ca5ea91794c0679cc414e03430bad"
         dirty_repo.ahead_count = 3
         dirty_repo.behind_count = 2
         dirty_repo.changed_count = 5
@@ -138,6 +143,7 @@ class TestTableFormatterRepositories:
         short_repo = Mock()
         short_repo.name = "a"
         short_repo.branch = "main"
+        short_repo.rev = "918e0c222f7ca5ea91794c0679cc414e03430bad"
         short_repo.ahead_count = 0
         short_repo.behind_count = 0
         short_repo.changed_count = 0
@@ -149,6 +155,7 @@ class TestTableFormatterRepositories:
         long_repo = Mock()
         long_repo.name = "very-long-repository-name"
         long_repo.branch = "feature-branch"
+        long_repo.rev = "918e0c222f7ca5ea91794c0679cc414e03430bad"
         long_repo.ahead_count = 10
         long_repo.behind_count = 5
         long_repo.changed_count = 15
@@ -169,6 +176,7 @@ class TestTableFormatterRepositories:
 
         # Check that longer name is accommodated
         assert "very-long-repository-name" in result
+        assert "918e0c222f7ca5ea91794c0679cc414e03430bad" in result
         assert "feature-branch" in result
 
     def test_format_repositories_empty_values_handling(self):
@@ -177,6 +185,7 @@ class TestTableFormatterRepositories:
         repo = Mock()
         repo.name = "test-repo"
         repo.branch = "main"
+        repo.rev = "918e0c222f7ca5ea91794c0679cc414e03430bad"
         repo.ahead_count = 0  # Should display as empty
         repo.behind_count = 2  # Should display as "2"
         repo.changed_count = 0  # Should display as empty
@@ -195,6 +204,7 @@ class TestTableFormatterRepositories:
         # This is a bit tricky to test directly, but we can check the structure
         assert "test-repo" in data_line
         assert "main" in data_line
+        assert "918e0c222f7ca5ea91794c0679cc414e03430bad" in data_line
         assert "2" in data_line  # behind count
         assert "1" in data_line  # untracked count
         assert "20" in data_line  # total commits
@@ -272,6 +282,7 @@ class TestTableFormatterIntegration:
         repo = Mock()
         repo.name = "test-repo"
         repo.branch = "main"
+        repo.rev = "918e0c222f7ca5ea91794c0679cc414e03430bad"
         repo.ahead_count = 1
         repo.behind_count = 0
         repo.changed_count = 2
@@ -294,14 +305,17 @@ class TestTableFormatterIntegration:
         )
 
         # Standard view should not have URL or total commits
+        assert "Commit" not in standard_result
         assert "Remote URL" not in standard_result
         assert "Total Commits" not in standard_result
         assert "Status" not in standard_result
 
         # Detailed view should have URL and total commits
+        assert "Commit" in detailed_result
         assert "Remote URL" in detailed_result
         assert "Total Commits" in detailed_result
         assert "Status" in detailed_result
+        assert "918e0c222f7ca5ea91794c0679cc414e03430bad" in detailed_result
         assert "https://github.com/user/test-repo.git" in detailed_result
         assert "50" in detailed_result
         assert "↑1 ~2 ?1" in detailed_result

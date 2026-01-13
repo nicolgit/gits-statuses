@@ -65,6 +65,8 @@ class TableFormatter:
         untracked_width = max(max_untracked_width, len("Untracked"))
 
         if show_url:
+            max_rev_width = max(len(repo.rev) for repo in display_repositories)
+            rev_width = max(max_rev_width, len("Commit"))
             max_url_width = max(len(repo.remote_url) for repo in display_repositories)
             url_width = max(max_url_width, len("Remote URL"))
             max_commits_width = max(
@@ -75,7 +77,7 @@ class TableFormatter:
             status_width = max(max_status_width, len("Status"))
 
             # Create header with URL
-            header = f"{'Repository':<{name_width}} | {'Branch':<{branch_width}} | {'Ahead':<{ahead_width}} | {'Behind':<{behind_width}} | {'Changed':<{changed_width}} | {'Untracked':<{untracked_width}} | {'Total Commits':<{commits_width}} | {'Status':<{status_width}} | {'Remote URL':<{url_width}}"
+            header = f"{'Repository':<{name_width}} | {'Branch':<{branch_width}} | {'Commit':<{rev_width}} | {'Ahead':<{ahead_width}} | {'Behind':<{behind_width}} | {'Changed':<{changed_width}} | {'Untracked':<{untracked_width}} | {'Total Commits':<{commits_width}} | {'Status':<{status_width}} | {'Remote URL':<{url_width}}"
             separator = "-" * len(header)
 
             # Create rows with URL
@@ -87,7 +89,7 @@ class TableFormatter:
                 untracked_str = (
                     str(repo.untracked_count) if repo.untracked_count > 0 else ""
                 )
-                row = f"{repo.name:<{name_width}} | {repo.branch:<{branch_width}} | {ahead_str:<{ahead_width}} | {behind_str:<{behind_width}} | {changed_str:<{changed_width}} | {untracked_str:<{untracked_width}} | {repo.total_commits:<{commits_width}} | {repo.status:<{status_width}} | {repo.remote_url:<{url_width}}"
+                row = f"{repo.name:<{name_width}} | {repo.branch:<{branch_width}} | {repo.rev:<{rev_width}} | {ahead_str:<{ahead_width}} | {behind_str:<{behind_width}} | {changed_str:<{changed_width}} | {untracked_str:<{untracked_width}} | {repo.total_commits:<{commits_width}} | {repo.status:<{status_width}} | {repo.remote_url:<{url_width}}"
                 rows.append(row)
         else:
             # Create header without URL
