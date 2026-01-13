@@ -16,6 +16,7 @@ This scans your directories and displays:
 **Standard View:**
 - Repository name
 - Current branch
+- Last Commit hash
 - Commits ahead of remote
 - Commits behind remote  
 - Changed files count
